@@ -29,6 +29,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+from builtins import str
+from builtins import next
 import copy
 import pickle
 
@@ -70,8 +72,8 @@ def ParseTokens(char_list):
       continuous_line = False
     if( new_char_list[index] == ';' ):
       continuous_line = False
-    if( len(new_char_list) > index + 1 and 
-        new_char_list[index] == '}'    and 
+    if( len(new_char_list) > index + 1 and
+        new_char_list[index] == '}'    and
         new_char_list[index + 1] != ';' ):
       skip, value = Clip(new_char_list[last_open:])
       temp_list.append({key: copy.deepcopy(ParseTokens(value))})
@@ -177,15 +179,15 @@ def ScrubComments(isc_string):
         striped_line = line.strip()
         chars = enumerate(striped_line)
         while True:
-          i, c = chars.next()
+          i, c = next(chars)
           try:
             if c == '/' and striped_line[i+1] == '*':
               expanded_comment = True
-              chars.next()  # Skipp '*'
+              next(chars)  # Skipp '*'
               continue
             elif c == '*' and striped_line[i+1] == '/':
               expanded_comment = False
-              chars.next()  # Skipp '/'
+              next(chars)  # Skipp '/'
               continue
           except IndexError:
             continue  # We are at the end of the line
@@ -232,7 +234,7 @@ def MakeISC(isc_dict, terminate=True):
     if( type(isc_dict[option]) == bool ):
       isc_list.append('%s%s' % (option, terminator))
     elif( type(isc_dict[option]) == str or
-        type(isc_dict[option]) == unicode):
+        type(isc_dict[option]) == str):
       isc_list.append('%s %s%s' % (option, isc_dict[option], terminator))
     elif( type(isc_dict[option]) == list ):
       new_list = []
