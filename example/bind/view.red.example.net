@@ -1,0 +1,32 @@
+$ORIGIN .
+$TTL 86400	; 1 day
+example.net		IN SOA	ns1.example.net. admin.example.net. (
+				1449117044 ; serial
+				10800      ; refresh (3 hours)
+				3600       ; retry (1 hour)
+				604800     ; expire (1 week)
+				38400      ; minimum (10 hours 40 minutes)
+				)
+			NS	ns1.example.net.
+			NS	ns2.example.net.
+			A	11.11.11.11
+			HINFO	"VAX-11/725" "VAX/VMS"
+			MX	10 mx1.example.net.
+			TXT	"v=spf1 -all"
+			CAA	0 issue "letsencrypt.org"
+$ORIGIN example.net.
+_443._tcp		TLSA	3 1 1 (
+				63249234698263498798794B61584A61DF7578DD978E
+				A6CB20891D8383BAC75E )
+$TTL 30	; 30 seconds
+workstation			A	5.1.2.3
+$TTL 86400	; 1 day
+mx1			A	11.11.11.11
+ns1			A	12.12.12.12
+$ORIGIN ns1.example.net.
+_443._tcp		TLSA	3 1 1 (
+				61C5DED3249234698263498798784A31DF3575DD978E
+				66C420891D8383B7C75E )
+$ORIGIN example.net.
+ns2			A	13.13.13.13
+www			CNAME	ns1

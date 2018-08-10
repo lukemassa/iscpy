@@ -1,0 +1,10 @@
+//// named.conf.statistics
+////
+//// statistics-channels
+////
+//// Defines access to XML (browser) statistics.
+
+////  CIS says do not use 'statistics-channel'
+// statistics-channels {
+//         inet 127.0.0.1 port 8053;
+// };

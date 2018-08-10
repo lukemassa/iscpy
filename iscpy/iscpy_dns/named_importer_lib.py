@@ -32,7 +32,7 @@
 import copy
 import iscpy
 
-def MakeNamedDict(named_string):
+def MakeNamedDict(named_string,IncludeFileAccess=""):
   """Makes a more organized named specific dict from parsed_dict
 
   Inputs:
