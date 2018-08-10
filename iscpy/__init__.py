@@ -37,8 +37,10 @@ __license__ = 'BSD'
 __version__ = '1.05'
 
 
-from iscpy_core.core import *
-import iscpy_dns.named_importer_lib as dns
+from iscpy.iscpy_core.core import *
+import iscpy.iscpy_dns as dns
+# import iscpy.iscpy_core.core as core
+# import iscpy.iscpy_dns.named_importer_lib as dns
 
 
 __all__ = ['ParseTokens', 'Clip', 'Explode', 'ScrubComments', 'MakeISC',
