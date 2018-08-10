@@ -30,8 +30,7 @@
 
 
 import copy
-import cPickle
-import json
+import pickle
 
 def ParseTokens(char_list):
   """Parses exploded isc named.conf portions.
@@ -71,8 +70,8 @@ def ParseTokens(char_list):
       continuous_line = False
     if( new_char_list[index] == ';' ):
       continuous_line = False
-    if( len(new_char_list) > index + 1 and
-        new_char_list[index] == '}'    and
+    if( len(new_char_list) > index + 1 and 
+        new_char_list[index] == '}'    and 
         new_char_list[index + 1] != ';' ):
       skip, value = Clip(new_char_list[last_open:])
       temp_list.append({key: copy.deepcopy(ParseTokens(value))})
@@ -157,47 +156,6 @@ def Explode(isc_string):
       temp_string.append(char)
     prev_char = char
   return str_array
-
-def SplitKeys(str_array):
-    """Split key include to nested element
-    Initial:
-        somekey somekeyvalue1;
-        somekey somekeyvalue2;
-        ...
-    Output:
-        somekey {
-            val1 somekeyvalue1;
-            val2 somekeyvalue2;
-        };
-    """
-    new_str_array = copy.deepcopy(str_array)
-    tokens = []
-    brackets = []
-    num_val = 1
-    # If next element is not ';', skip
-    for idx, element in enumerate(new_str_array):
-        if (element == '{'):
-            brackets.append(element)
-        elif (element == '}'):
-            a = brackets.pop()
-        elif (  len(element.split()) >= 2 and new_str_array[idx + 1] == ';' and len(brackets) == 0):
-            str_path = 'val' + str(num_val) + ' ' + element.split()[1]
-            if ( ( element.split()[0] not in tokens ) ):
-                tokens.append(element.split()[0])
-                new_str_array[idx] = element.split()[0]
-                new_str_array.insert(idx + 1, '{')
-                new_str_array.insert(idx + 2, str_path)
-                new_str_array.insert(idx + 3, ';')
-                new_str_array.insert(idx + 4, '}')
-            else:
-                del new_str_array[idx + 1]
-                del new_str_array[idx]
-                idx_token = new_str_array.index(element.split()[0])
-                new_str_array.insert(idx_token + 2, str_path)
-                new_str_array.insert(idx_token + 3, ';')
-            num_val += 1
-    return tokens, new_str_array
-
 
 def ScrubComments(isc_string):
   """Clears comments from an isc file
@@ -295,9 +253,7 @@ def ParseISCString(isc_string):
   Outputs:
     dict: dictionary of ISC file representation
   """
-  isc_specialkeys, isc_array = SplitKeys(Explode(ScrubComments(isc_string)))
-  isc_dict = ParseTokens(isc_array)
-  return isc_dict, isc_specialkeys
+  return ParseTokens(Explode(ScrubComments(isc_string)))
 
 def Serialize(isc_string):
   """Makes a pickled string of a dict from an ISC file string
@@ -308,7 +264,7 @@ def Serialize(isc_string):
   Outputs:
     serialized_isc: serialized string of isc dict
   """
-  return u'%s' % cPickle.dumps(ParseISCString(isc_string))
+  return u'%s' % pickle.dumps(ParseISCString(isc_string))
 
 def Deserialize(serialized_string):
   """Makes an iscpy dict from a serliazed ISC dict
@@ -319,63 +275,4 @@ def Deserialize(serialized_string):
   Outputs:
     deserialized_isc: unserialized dict of serialized isc dict
   """
-  return u'%s' % MakeISC(cPickle.loads(str(serialized_string)))
-
-def AddZone(json_zone, isc_dict):
-    """Add zone to named config
-
-    Inputs:
-        json_zone: Zone definition in json format
-
-    Outputs:
-        isc dict with added value
-    """
-    isc_dict.update(json_zone)
-    return isc_dict
-
-def ContentToWrite(isc_dict, num_tab, content, tokens):
-    """
-        Print ISC dictionary to specific file
-    """
-    s = ''
-    for key, val in isc_dict.items():
-        if key in tokens:
-            for childkey, childval in val.items():
-                s = key + ' ' + str(childval) + ';\n'
-                content.append(s)
-                s = ''
-            content.append('\n')
-        elif (isinstance(val, dict)):
-            for tab in range (0, num_tab):
-                s += "\t"
-            s += key + " {\n"
-            content.append(s)
-            num_tab += 1
-            ContentToWrite(val, num_tab, content, tokens)
-            if num_tab >= 1:
-                num_tab -= 1
-            s = ''
-            for tab in range (0, num_tab):
-                s += "\t"
-            s += "};\n"
-            content.append(s)
-            if num_tab == 0:
-                content.append("\n")
-            s = ''
-        else:
-            for tab in range (0, num_tab):
-                s += "\t"
-            if "True" in str(val):
-                s += key + ";\n"
-            else:
-                s += key + " " + str(val) + ";\n"
-            content.append(s)
-            s = ''
-    if num_tab == 0:
-        return content
-
-def WriteToFile(isc_dict, isc_specialkeys, filename):
-    with open(filename, "w") as f:
-        conts = ContentToWrite(isc_dict, 0, [], isc_specialkeys)
-        for c in conts:
-            f.write(c)
+  return u'%s' % MakeISC(pickle.loads(str(serialized_string)))

@@ -1,5 +1,7 @@
-# iscpy_modified
-iscpy modified python library. Additional features such as adding zone and write to file
+# python3-iscpy
+
+iscpy Python3 library. Reads and writes ISC-syled configuration files such as
+ISC BIND8/BIND9 and ISC-DHCP server/client.  Additional features such as adding zone and write to file
 
 ## Usage
 

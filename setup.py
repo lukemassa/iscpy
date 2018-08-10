@@ -7,7 +7,7 @@ except ImportError:
 
 import sys, os
 
-version = '1.05'
+version = '1.8'
 
 setup(
     name='iscpy',
@@ -18,12 +18,14 @@ setup(
         possibilities for depth and quantity of ISC config files. ISC config
         files include BIND and DHCP config files among a few others.
     """,
-    classifiers=[],
+    classifiers=[
+        'Programming Language :: Python :: 3.5 :: Only'
+        ],
     keywords='isc config bind dhcp parser dns python',
-    author='Jacob C. Collins',
-    author_email='jc@purdue.edu',
-    url='',
-    license='BSD',
+    author='Stephen Egbert',
+    author_email='egberts@github.com',
+    url='https://github.com/egberts/python3-iscpy',
+    license='BSD 3-Clause',
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
     zip_safe=False,
