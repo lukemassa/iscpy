@@ -278,3 +278,60 @@ def Deserialize(serialized_string):
     deserialized_isc: unserialized dict of serialized isc dict
   """
   return u'%s' % MakeISC(pickle.loads(str(serialized_string)))
+
+  def AddZone(json_zone, isc_dict):
+    """Add zone to named config
+    Inputs:
+        json_zone: Zone definition in json format
+    Outputs:
+        isc dict with added value
+    """
+    isc_dict.update(json_zone)
+    return isc_dict
+
+def ContentToWrite(isc_dict, num_tab, content, tokens):
+    """
+        Print ISC dictionary to specific file
+    """
+    s = ''
+    for key, val in isc_dict.items():
+        if key in tokens:
+            for childkey, childval in val.items():
+                s = key + ' ' + str(childval) + ';\n'
+                content.append(s)
+                s = ''
+            content.append('\n')
+        elif (isinstance(val, dict)):
+            for tab in range (0, num_tab):
+                s += "\t"
+            s += key + " {\n"
+            content.append(s)
+            num_tab += 1
+            ContentToWrite(val, num_tab, content, tokens)
+            if num_tab >= 1:
+                num_tab -= 1
+            s = ''
+            for tab in range (0, num_tab):
+                s += "\t"
+            s += "};\n"
+            content.append(s)
+            if num_tab == 0:
+                content.append("\n")
+            s = ''
+        else:
+            for tab in range (0, num_tab):
+                s += "\t"
+            if "True" in str(val):
+                s += key + ";\n"
+            else:
+                s += key + " " + str(val) + ";\n"
+            content.append(s)
+            s = ''
+    if num_tab == 0:
+        return content
+
+def WriteToFile(isc_dict, isc_specialkeys, filename):
+    with open(filename, "w") as f:
+        conts = ContentToWrite(isc_dict, 0, [], isc_specialkeys)
+        for c in conts:
+            f.write(c)
