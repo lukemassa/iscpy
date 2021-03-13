@@ -19,3 +19,8 @@ Adding zone. Input is in json string. Returns ISC dictionary with added zone. Th
 WriteToFile(isc_dict, isc_specialkeys, filename)
 ```
 Write ISC dictionary to a file
+
+```
+ReadFromFile(filename)
+```
+Read an ISC file into a dictionary

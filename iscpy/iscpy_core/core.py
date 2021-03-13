@@ -335,3 +335,7 @@ def WriteToFile(isc_dict, isc_specialkeys, filename):
         conts = ContentToWrite(isc_dict, 0, [], isc_specialkeys)
         for c in conts:
             f.write(c)
+
+def ReadFromFile(filename):
+    with open(filename) as f:
+        return ParseISCString(f.read())
